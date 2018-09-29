@@ -6,7 +6,7 @@ import time
 import xlrd
 
 code_url='https://e1.flightcdn.com/ajax/ignoreall/omnisearch/flight.rvt?v=47&locale=zh_CN&searchterm='
-outfile='indent_out.csv'
+outfile='indent_out2.csv'
 f=open(outfile,'w')
 t0=time.time()
 
@@ -28,14 +28,15 @@ def time_swap(timestamp):
 data = xlrd.open_workbook('2018data.xlsx')
 table = data.sheets()[0]
 nrows = table.nrows
-ncols = table.ncols
-print '总行数=', nrows
-
 ids = table.col_values(0)
 activeTime = table.col_values(16)
 flight_no = table.col_values(24)
 all_flight = map(lambda x, y, z: [x, y, z], ids, activeTime, flight_no)
 all_flight[0].append('flight_code')
+ncols = table.ncols
+print '总行数=', nrows
+
+
 f.write(','.join([str(all_flight[0][i]).replace('.0','') for i in range(4)])+'\n')
 for idd,one in enumerate(all_flight[1:]):
     flight_code=get_flight_code(one[2])
@@ -43,6 +44,4 @@ for idd,one in enumerate(all_flight[1:]):
     # all_flight[idd+1].append(flight_code)
     one.append(flight_code)
     f.write(','.join([str(one[i]).replace('.0','') for i in range(4)])+'\n')
-
 f.close()
-
