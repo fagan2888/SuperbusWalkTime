@@ -1,7 +1,6 @@
 # coding:utf-8
 import re
 import time
-import xlrd
 import sys
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -39,7 +38,16 @@ chrome_options = webdriver.ChromeOptions()
 prefs = {"profile.managed_default_content_settings.images":2}
 chrome_options.add_experimental_option("prefs",prefs)
 
-outfile='ident_date.csv'
+# edit the file name to avoid rewrite the origin file
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+outfile='ident_date_new.csv'
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+if raw_input('sure to truncate the file>>  '+outfile+'  <<?(y/n)')=='y':
+    pass
+else:
+    print 'exit!'
+    sys.exit()
+
 open(outfile,'w').close()
 t0=time.time()
 login_url = 'https://zh.flightaware.com/account/session'
@@ -70,11 +78,14 @@ for ident in open('ident_list.txt','r').readlines()[1:]:
         try:
             arrtime=re.findall('\d\d:\d\d',infos[3])[0]
             time_flag=infos[3].find(u'下')
+            if arrtime[0:2]=='12':
+                arrtime='00'+arrtime[2:]
             if time_flag!=-1:
                 arrtime=trans_time(arrtime)
-            plus_flag=infos[3].find('+1')
+            plus_flag=infos[3].find('+1') #是否到达时间+1天
             if plus_flag!=-1:
                 arrtime=timeplus1(arrtime)
+
         except:
             arrtime=''
         #print date,deptime,arrtime
